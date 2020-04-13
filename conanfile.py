@@ -12,13 +12,13 @@ class OpenALConan(ConanFile):
     license = "MIT"
     exports_sources = ["CMakeLists.txt"]
     generators = "cmake"
+    version = "1.19.1"
 
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {'shared': False, 'fPIC': True}
 
     _source_subfolder = "source_subfolder"
-    _build_subfolder = "build_subfolder"
 
     def configure(self):
         if self.settings.os == 'Windows':
@@ -30,17 +30,15 @@ class OpenALConan(ConanFile):
         pass
 
     def source(self):
-        tools.get(**self.conan_data["sources"][self.version])
-        extracted_dir = "openal-soft-openal-soft-" + self.version
-        os.rename(extracted_dir, self._source_subfolder)
+        git = tools.Git(folder=self._source_subfolder)
+        git.clone("https://github.com/kcat/openal-soft.git", "openal-soft-1.19.1")
 
-    def _platform_definitions(self):
+    def _platform_defs(self):
         if self.settings.os == "Windows":
             return {
                 'ALSOFT_BACKEND_WASAPI': False,
                 'ALSOFT_BACKEND_WAVE': False,
                 'ALSOFT_BACKEND_WINMM': False,
-                'ALSOFT_BACKEND_SDL2': False,
                 'ALSOFT_NO_CONFIG_UTIL': True,
                 'ALSOFT_REQUIRE_DSOUND': True,
             }
@@ -48,6 +46,7 @@ class OpenALConan(ConanFile):
             return {
                 'ALSOFT_BACKEND_SNDIO': False,
                 'ALSOFT_BACKEND_WAVE': False,
+                'ALSOFT_BACKEND_SDL2': False,
                 'ALSOFT_REQUIRE_ALSA': True,
                 'ALSOFT_REQUIRE_OSS': True,
                 'ALSOFT_REQUIRE_PULSEAUDIO': True,
@@ -62,18 +61,23 @@ class OpenALConan(ConanFile):
         raise ConanInvalidConfiguration('Unsupported OS')
 
     def _configure_cmake(self):
-        cmake = CMake(self, defs=self._platform_definitions())
-        cmake.definitions['LIBTYPE'] = 'SHARED' if self.options.shared else 'STATIC'
-        cmake.definitions['ALSOFT_UTILS'] = False
-        cmake.definitions['ALSOFT_EXAMPLES'] = False
-        cmake.definitions['ALSOFT_TESTS'] = False
-        cmake.definitions['CMAKE_DISABLE_FIND_PACKAGE_SoundIO'] = True
-        cmake.configure(build_folder=self._build_subfolder)
+        cmake = CMake(self)
         return cmake
 
     def build(self):
-        cmake = self._configure_cmake()
-        cmake.build()
+        # Need to run within VC environment, or DirectSound will not be found
+        with tools.vcvars(self.settings):
+            cmake = self._configure_cmake()
+            defs = self._platform_defs()
+            defs.update({
+                'LIBTYPE': 'SHARED' if self.options.shared else 'STATIC',
+                'ALSOFT_UTILS': False,
+                'ALSOFT_EXAMPLES': False,
+                'ALSOFT_TESTS': False,
+                'CMAKE_DISABLE_FIND_PACKAGE_SoundIO': True
+            })
+            cmake.configure(defs=defs)
+            cmake.build()
 
     def package(self):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
