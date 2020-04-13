@@ -1,4 +1,5 @@
 from conans import CMake, ConanFile, tools
+from conans.errors import ConanInvalidConfiguration
 import os
 
 
@@ -33,8 +34,35 @@ class OpenALConan(ConanFile):
         extracted_dir = "openal-soft-openal-soft-" + self.version
         os.rename(extracted_dir, self._source_subfolder)
 
+    def _platform_definitions(self):
+        if self.settings.os == "Windows":
+            return {
+                'ALSOFT_BACKEND_WASAPI': False,
+                'ALSOFT_BACKEND_WAVE': False,
+                'ALSOFT_BACKEND_WINMM': False,
+                'ALSOFT_BACKEND_SDL2': False,
+                'ALSOFT_NO_CONFIG_UTIL': True,
+                'ALSOFT_REQUIRE_DSOUND': True,
+            }
+        if self.settings.os == "Linux":
+            return {
+                'ALSOFT_BACKEND_SNDIO': False,
+                'ALSOFT_BACKEND_WAVE': False,
+                'ALSOFT_REQUIRE_ALSA': True,
+                'ALSOFT_REQUIRE_OSS': True,
+                'ALSOFT_REQUIRE_PULSEAUDIO': True,
+            }
+        if self.settings.os == "Macos":
+            return {
+                'ALSOFT_BACKEND_WAVE': False,
+                'ALSOFT_BACKEND_SDL2': False,
+                'ALSOFT_NO_CONFIG_UTIL': True,
+                'ALSOFT_REQUIRE_COREAUDIO': True,
+            }
+        raise ConanInvalidConfiguration('Unsupported OS')
+
     def _configure_cmake(self):
-        cmake = CMake(self)
+        cmake = CMake(self, defs=self._platform_definitions())
         cmake.definitions['LIBTYPE'] = 'SHARED' if self.options.shared else 'STATIC'
         cmake.definitions['ALSOFT_UTILS'] = False
         cmake.definitions['ALSOFT_EXAMPLES'] = False
