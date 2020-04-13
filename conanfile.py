@@ -26,8 +26,7 @@ class OpenALConan(ConanFile):
         del self.settings.compiler.cppstd
 
     def requirements(self):
-        if self.settings.os == "Linux":
-            self.requires("libalsa/1.1.9")
+        pass
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
