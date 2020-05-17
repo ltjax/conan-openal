@@ -1,32 +1,9 @@
 ## Package Status
 
-| Bintray | Windows | Linux & macOS |
-|:--------:|:---------:|:-----------------:|
-|[![Download](https://api.bintray.com/packages/bincrafters/public-conan/openal%3Abincrafters/images/download.svg) ](https://bintray.com/bincrafters/public-conan/openal%3Abincrafters/_latestVersion)|[![Build status](https://ci.appveyor.com/api/projects/status/github/bincrafters/conan-openal?svg=true)](https://ci.appveyor.com/project/bincrafters/conan-openal)|[![Build Status](https://travis-ci.com/bincrafters/conan-openal.svg)](https://travis-ci.com/bincrafters/conan-openal)|
+[![Build Status](https://travis-ci.org/ltjax/conan-openal.svg?branch=stable/1.19.1)](https://travis-ci.org/ltjax/conan-openal)
+[![Build status](https://ci.appveyor.com/api/projects/status/qn6l93yg4ktx1xon/branch/stable/1.19.1?svg=true)](https://ci.appveyor.com/project/ltjax/conan-openal/branch/stable/1.19.1)
 
-## Conan Information
-
-Bincrafters packages can be found in the following public Conan repository:
-
-[Bincrafters Public Conan Repository on Bintray](https://bintray.com/bincrafters/public-conan)
-
-*Note: You can click the "Set Me Up" button on the Bintray page above for instructions on using packages from this repository.*
-
-## Issues
-
-If you wish to report an issue or make a request for a Bincrafters package, please do so here:
-
-[Bincrafters Community Issues](https://github.com/bincrafters/community/issues)
-
-## General Information
-
-This GIT repository is managed by the Bincrafters team and holds files related to Conan.io.  For detailed information about Bincrafters and Conan.io, please visit the following resources:
-
-[Bincrafters Wiki - Common README](https://github.com/bincrafters/community/wiki/Common-README.md)
-
-[Bincrafters Technical Documentation](http://bincrafters.readthedocs.io/en/latest/)
-
-[Bincrafters Blog](https://bincrafters.github.io)
+This is a fork of the bincrafters openal conan package adapted for my gamedev needs.
 
 ## License Information
 
